@@ -17,13 +17,10 @@ function App() {
     <div className="App">
       {/* <Main SvgElement={Svg} /> */}
       {/* <Main SvgElement={Ai} /> */}
-      {/* <Find SvgElement={Star} /> */}
       <Find SvgElement={Polygon} />
-      {/* <Main SvgElement={Laptop} /> */}
-      {/* <Main SvgElement={People} /> */}
-      {/* <Main SvgElement={Skater} /> */}
-      {/* <ComplexSvgs SvgElement={Skater} /> */}
-      {/* <Find SvgElement={Skater} /> */}
+      <Find SvgElement={Laptop} />
+      <Find SvgElement={Ai} />
+      <Find SvgElement={Skater} />
       <Find SvgElement={girl} />
 
 

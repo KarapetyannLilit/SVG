@@ -1,9 +1,9 @@
 import { getRandomColor } from "./getRandomColor"
-
 let groupedElementsByClassName = {}
 let groupedElementsByIds = {}
 let groupGradientElements = {}
-let elementsWithPath = []
+let groupXpathElements = {}
+export let globalObj = {}
 const getStyleType = (node) => {
     const nodeClassList = Array.from(node.classList)
     if (nodeClassList.length) {
@@ -15,72 +15,83 @@ const getStyleType = (node) => {
             }
         })
     }
-    //*[@id="Layer_1"]/rect[2]
-    //*[@id="Layer_1"]/polygon[1]
-    //*[@id="Layer_1"]/circle[15]
-    //*[@id="eV1DkAIjJXa2-fill-3"]
-    //*[@id="eV1DkAIjJXa1"]/polygon
-    //*[@id="Layer_1"]/g[2]/path[1]
-    else if (node.id) {
+    if (node.id) {
         groupedElementsByIds[node.id] = [node]
     }
-    else if (node.getAttribute('fill')) {
-        if (node.getAttribute('fill').includes('url')) {
-            if (node.getAttribute('fill').includes('img')) {
+    if (node.getAttribute("fill")) {
+        if (node.getAttribute("fill").includes("url")) {
+            if (node.getAttribute("fill").includes("img")) {
                 return
             }
-            if (node.getAttribute('fill').includes('#')) {
-                const gradientId = node.getAttribute('fill').substring(
-                    node.getAttribute('fill').indexOf("(") + 2,
-                    node.getAttribute('fill').lastIndexOf(")")
-                );
+            if (node.getAttribute("fill").includes("#")) {
+                const gradientId = node
+                    .getAttribute("fill")
+                    .substring(
+                        node.getAttribute("fill").indexOf("(") + 2,
+                        node.getAttribute("fill").lastIndexOf(")")
+                    )
                 ForCaseGradient(gradientId)
             }
-        }
-        else {
+        } else {
             node.setAttribute("fill", getRandomColor())
         }
         if (node.parentNode) {
-            res = ''
+            res = ""
             findPath(node)
+            node.dataset.path = res
+            groupXpathElements[res] = node
         }
-        //  node.parentNode
-        elementsWithPath.push(node)
     }
-
-}
-
-const gradientFind = () => {
-    return "Gradient"
-}
-let res = '';
-const findPath = (node) => {
-    if (node.parentNode.getAttribute("id")) {
-        const id = node.parentNode.getAttribute("id")
-        const a = Array.from(shape.querySelectorAll(node.tagName))
-        let index = a.indexOf(node);
-        console.log(node);
-        // console.log(node.parentNode.children);
-        console.log(node.tagName);
-        if (!/^(?!0*(\.0+)?$)(\d+|\d*\.\d+)$/.test(index)) {
-            index = ''
+    if (node.getAttribute("stroke")) {
+        if (node.getAttribute("stroke").includes("url")) {
+            if (node.getAttribute("stroke").includes("img")) {
+                return
+            }
+            if (node.getAttribute("stroke").includes("#")) {
+                const gradientId = node
+                    .getAttribute("stroke")
+                    .substring(
+                        node.getAttribute("stroke").indexOf("(") + 2,
+                        node.getAttribute("stroke").lastIndexOf(")")
+                    )
+                ForCaseGradient(gradientId)
+            }
         } else {
-            index = '[' + index + ']'
+            node.setAttribute("stroke", getRandomColor())
         }
+        if (node.parentNode) {
+            res = ""
+            findPath(node)
+            node.dataset.path = res
+        }
+    }
+}
+let res = ""
+const findPath = (node) => {
+    const id = node.parentNode.getAttribute("id")
+    const parent = Array.from(node.parentNode.querySelectorAll(node.tagName))
+    let index = parent.indexOf(node)
+    if (parent.length === 1) {
+        if (!/^(?!0*(\.0+)?$)(\d+|\d*\.\d+)$/.test(index)) {
+            index = ""
+        }
+    } else if (parent.length > 1) {
+        index += 1
+        index = "[" + index + "]"
+    }
+    if (node.parentNode.getAttribute("id")) {
         res = '[@id="' + id + '"]/' + node.tagName + index
-    }
-    if (res) {
-        res += '/' + node.tagName + index
     } else {
-        res +=
-            findPath(node.parentNode)
+        while (!res) {
+            if (node.parentNode) {
+                findPath(node.parentNode)
+            }
+        }
+        res += "/" + node.tagName + index
     }
-    console.log(res);
 }
 const ForCaseGradient = (gradientId) => {
-
-    const children = Array.from(shape.getElementById(gradientId).children);
-    // groupGradientElements 
+    const children = Array.from(shape.getElementById(gradientId).children)
     children.forEach((child) => {
         if (gradientId in groupGradientElements) {
             groupGradientElements[gradientId].push(child)
@@ -89,12 +100,11 @@ const ForCaseGradient = (gradientId) => {
         }
     })
     if (gradientId in groupGradientElements) {
-        groupGradientElements[gradientId].forEach(element => {
+        groupGradientElements[gradientId].forEach((element) => {
             element.setAttribute("stop-color", getRandomColor())
         })
     }
 }
-
 const findEachChild = (node) => {
     const children = Array.from(node.children)
     if (children.length) {
@@ -107,33 +117,40 @@ const findEachChild = (node) => {
 }
 const changeStyle = (group) => {
     for (const list in group) {
-        const color = getRandomColor()
+        let colorStroke = getRandomColor()
+        let colorFill = getRandomColor()
         group[list].forEach((el) => {
-            el.setAttribute("style", "fill:" + `${color}`)
+            let elStyleFill = window.getComputedStyle(el).fill
+            let elStyleStroke = window.getComputedStyle(el).stroke
+            if (elStyleFill === "none" || !elStyleFill) {
+                colorFill = ""
+            }
+            if (elStyleStroke === "none" || !elStyleStroke) {
+                colorStroke = ""
+            }
+            el.setAttribute("style", "stroke:" + `${colorStroke}; fill: ${colorFill}`)
         })
     }
 }
-
-let shape;
-
+let shape
 export const clicked = (node) => {
-    shape = node.current;
+     globalObj = {}
+    shape = node.current
     groupedElementsByClassName = {}
+    groupGradientElements={}
     findEachChild(node.current)
     changeStyle(groupedElementsByClassName)
     changeStyle(groupedElementsByIds)
-    // if (elementsWithPath) {
-    //     console.log(elementsWithPath);
-    // }
+    setGlobalObj()
+    GlobalObj()
 }
 
-// const getPath = (arr) => {
-//     const children = Array.from(node.children)
-//     if (children.length) {
-//         children.forEach((child) => {
-//             findEachChild(child)
-//         })
-//     } else {
-//         getStyleType(node)
-//     }
-// }
+
+const setGlobalObj = () => {
+    globalObj['ClassName'] = groupedElementsByClassName
+    globalObj['gradient'] = groupGradientElements
+    // globalObj['XpathElements'] = groupXpathElements
+}
+
+
+export const GlobalObj = () => globalObj 
