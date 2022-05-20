@@ -1,4 +1,4 @@
-import './styled.css';
+import './../styled.css';
 
 const Ai = ({ ShapeRef }) => {
     return (

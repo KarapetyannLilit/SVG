@@ -1,72 +1,71 @@
+import { FILL, STOP_COLOR, STROKE } from "./Constants"
 import { getRandomColor } from "./getRandomColor"
-let groupedElementsByClassName = {}
 let groupedElementsByIds = {}
-let groupGradientElements = {}
 let groupXpathElements = {}
-export let globalObj = {}
+const globalObj = {
+    groupedElementsByClassName: {},
+    groupGradientElements: {},
+    // groupXpathElements: {},
+}
 const getStyleType = (node) => {
     const nodeClassList = Array.from(node.classList)
     if (nodeClassList.length) {
         nodeClassList.forEach((className) => {
-            if (className in groupedElementsByClassName) {
-                groupedElementsByClassName[className].push(node)
+            if (className in globalObj.groupedElementsByClassName) {
+                globalObj.groupedElementsByClassName[className].push(node)
             } else {
-                groupedElementsByClassName[className] = [node]
+                globalObj.groupedElementsByClassName[className] = [node]
             }
         })
     }
     if (node.id) {
         groupedElementsByIds[node.id] = [node]
     }
-    if (node.getAttribute("fill")) {
-        if (node.getAttribute("fill").includes("url")) {
-            if (node.getAttribute("fill").includes("img")) {
+    if (node.getAttribute(FILL)) {
+        if (node.getAttribute(FILL).includes("url")) {
+            if (node.getAttribute(FILL).includes("img")) {
                 return
             }
-            if (node.getAttribute("fill").includes("#")) {
+            if (node.getAttribute(FILL).includes("#")) {
                 const gradientId = node
-                    .getAttribute("fill")
+                    .getAttribute(FILL)
                     .substring(
-                        node.getAttribute("fill").indexOf("(") + 2,
-                        node.getAttribute("fill").lastIndexOf(")")
+                        node.getAttribute(FILL).indexOf("(") + 2,
+                        node.getAttribute(FILL).lastIndexOf(")")
                     )
                 ForCaseGradient(gradientId)
             }
         } else {
-            node.setAttribute("fill", getRandomColor())
+            node.setAttribute(FILL, getRandomColor())
         }
         if (node.parentNode) {
-            res = ""
-            findPath(node)
-            node.dataset.path = res
-            groupXpathElements[res] = node
+            node.dataset.path = findPath(node)
+groupXpathElements[node.dataset.path] = node
         }
     }
-    if (node.getAttribute("stroke")) {
-        if (node.getAttribute("stroke").includes("url")) {
-            if (node.getAttribute("stroke").includes("img")) {
+    if (node.getAttribute(STROKE)) {
+        if (node.getAttribute(STROKE).includes("url")) {
+            if (node.getAttribute(STROKE).includes("img")) {
                 return
             }
-            if (node.getAttribute("stroke").includes("#")) {
+            if (node.getAttribute(STROKE).includes("#")) {
                 const gradientId = node
-                    .getAttribute("stroke")
+                    .getAttribute(STROKE)
                     .substring(
-                        node.getAttribute("stroke").indexOf("(") + 2,
-                        node.getAttribute("stroke").lastIndexOf(")")
+                        node.getAttribute(STROKE).indexOf("(") + 2,
+                        node.getAttribute(STROKE).lastIndexOf(")")
                     )
                 ForCaseGradient(gradientId)
             }
         } else {
-            node.setAttribute("stroke", getRandomColor())
+            node.setAttribute(STROKE, getRandomColor())
         }
         if (node.parentNode) {
-            res = ""
-            findPath(node)
-            node.dataset.path = res
+            node.dataset.path = findPath(node)
+            groupXpathElements[node.dataset.path] = node
         }
     }
 }
-let res = ""
 const findPath = (node) => {
     const id = node.parentNode.getAttribute("id")
     const parent = Array.from(node.parentNode.querySelectorAll(node.tagName))
@@ -80,28 +79,24 @@ const findPath = (node) => {
         index = "[" + index + "]"
     }
     if (node.parentNode.getAttribute("id")) {
-        res = '[@id="' + id + '"]/' + node.tagName + index
+        return '[@id="' + id + '"]/' + node.tagName + index
     } else {
-        while (!res) {
-            if (node.parentNode) {
-                findPath(node.parentNode)
-            }
-        }
-        res += "/" + node.tagName + index
+        return findPath(node.parentNode) + "/" + node.tagName + index
     }
 }
 const ForCaseGradient = (gradientId) => {
-    const children = Array.from(shape.getElementById(gradientId).children)
+    const children = Array.from(document.getElementById(gradientId).children)
     children.forEach((child) => {
-        if (gradientId in groupGradientElements) {
-            groupGradientElements[gradientId].push(child)
+        if (gradientId in globalObj.groupGradientElements) {
+            globalObj.groupGradientElements[gradientId].push(child)
         } else {
-            groupGradientElements[gradientId] = [child]
+            globalObj.groupGradientElements[gradientId] = [child]
         }
     })
-    if (gradientId in groupGradientElements) {
-        groupGradientElements[gradientId].forEach((element) => {
-            element.setAttribute("stop-color", getRandomColor())
+    
+    if (gradientId in globalObj.groupGradientElements) {
+        globalObj.groupGradientElements[gradientId].forEach((element) => {
+            element.setAttribute(STOP_COLOR, getRandomColor())
         })
     }
 }
@@ -119,9 +114,25 @@ const changeStyle = (group) => {
     for (const list in group) {
         let colorStroke = getRandomColor()
         let colorFill = getRandomColor()
-        group[list].forEach((el) => {
-            let elStyleFill = window.getComputedStyle(el).fill
-            let elStyleStroke = window.getComputedStyle(el).stroke
+        if (group[list].length) {
+            group[list].forEach((el) => {
+                const elStyleFill = window.getComputedStyle(el).fill
+                const elStyleStroke = window.getComputedStyle(el).stroke
+                if (elStyleFill === "none" || !elStyleFill) {
+                    colorFill = ""
+                }
+                if (elStyleStroke === "none" || !elStyleStroke) {
+                    colorStroke = ""
+                }
+                el.setAttribute(
+                    "style",
+                    "stroke:" + `${colorStroke}; fill: ${colorFill}`
+                )
+            })
+        } else {
+            const el = group[list]
+            const elStyleFill = window.getComputedStyle(el).fill
+            const elStyleStroke = window.getComputedStyle(el).stroke
             if (elStyleFill === "none" || !elStyleFill) {
                 colorFill = ""
             }
@@ -129,28 +140,16 @@ const changeStyle = (group) => {
                 colorStroke = ""
             }
             el.setAttribute("style", "stroke:" + `${colorStroke}; fill: ${colorFill}`)
-        })
+        }
     }
 }
-let shape
 export const clicked = (node) => {
-     globalObj = {}
-    shape = node.current
-    groupedElementsByClassName = {}
-    groupGradientElements={}
+    globalObj.groupedElementsByClassName = {}
+    globalObj.groupGradientElements = {}
+    globalObj.groupXpathElements = {}
     findEachChild(node.current)
-    changeStyle(groupedElementsByClassName)
+    changeStyle(globalObj.groupedElementsByClassName)
     changeStyle(groupedElementsByIds)
-    setGlobalObj()
-    GlobalObj()
+    //   changeStyle(globalObj.groupXpathElements)
 }
-
-
-const setGlobalObj = () => {
-    globalObj['ClassName'] = groupedElementsByClassName
-    globalObj['gradient'] = groupGradientElements
-    // globalObj['XpathElements'] = groupXpathElements
-}
-
-
-export const GlobalObj = () => globalObj 
+export const GlobalObj = () => globalObj

@@ -1,8 +1,8 @@
 import React, { memo, useRef, useEffect } from "react"
+import { STOP_COLOR } from "./Constants"
 
 export const ColorSlider = ({ value, elements }) => {
     const colorInputRef = useRef()
-    const inputRef = useRef()
 
     useEffect(() => {
         colorInputRef.current.value = value
@@ -20,8 +20,8 @@ export const ColorSlider = ({ value, elements }) => {
                 }
             })
         } else {
-            if (elements.getAttribute("stop-color")) {
-                elements.setAttribute("stop-color", e.target.value)
+            if (elements.getAttribute(STOP_COLOR)) {
+                elements.setAttribute(STOP_COLOR, e.target.value)
             }
         }
         colorRef.current.value = e.target.value
