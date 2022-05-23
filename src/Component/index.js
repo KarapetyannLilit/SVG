@@ -1,4 +1,3 @@
-import { ForCaseXPath } from "./CommonFunctions"
 import { CLASSNAME, FILL, STROKE } from "./Constants"
 import { rgb2hex } from "./getRandomColor"
 
@@ -7,8 +6,6 @@ const globalObj = {
     fill: {},
     stroke: {},
   },
-  // groupGradientElements: {},
-  // groupXpathElements: {},
 }
 const getStyleType = (node) => {
   const nodeClassList = Array.from(node.classList)
@@ -27,35 +24,15 @@ const getStyleType = (node) => {
       }
     })
   }
-  // if (node.id) {
-  //   groupedElementsByIds[node.id] = [node]
-  // }
-  // ForCaseXPath(FILL, node, globalObj, findPath)
-  // ForCaseXPath(STROKE, node, globalObj, findPath)
 }
 
-const findPath = (node) => {
-  const id = node.parentNode.getAttribute("id")
-  const siblings = node.parentNode.children
-  const siblingsWithSameTagName = Array.from(siblings).filter((sibling) => {
-    if (sibling.tagName === node.tagName) {
-      return sibling
-    }
-  })
-  let index = siblingsWithSameTagName.indexOf(node)
-  if (siblingsWithSameTagName.length === 1) {
-    if (!/^(?!0*(\.0+)?$)(\d+|\d*\.\d+)$/.test(index)) {
-      index = ""
-    }
-  } else if (siblingsWithSameTagName.length > 1) {
-    index += 1
-    index = "[" + index + "]"
+let num = 0
+
+const addClassName = (node) => {
+  if (node.classList.value === "") {
+    node.classList.value = num
   }
-  if (node.parentNode.getAttribute("id")) {
-    return '[@id="' + id + '"]/' + node.tagName + index
-  } else {
-    return findPath(node.parentNode) + "/" + node.tagName + index
-  }
+  num++
 }
 
 const findEachChild = (node) => {
@@ -65,6 +42,7 @@ const findEachChild = (node) => {
       findEachChild(child)
     })
   } else {
+    addClassName(node)
     getStyleType(node)
   }
 }
@@ -105,8 +83,6 @@ const setObj = (className, type, node, color) => {
 export const clicked = (node) => {
   globalObj.groupedElementsByClassName.fill = {}
   globalObj.groupedElementsByClassName.stroke = {}
-  // globalObj.groupGradientElements = {}
-  // globalObj.groupXpathElements = {}
   findEachChild(node.current)
   console.log(globalObj)
 }
