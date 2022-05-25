@@ -18,7 +18,6 @@ const getStyleType = (node) => {
       if (fill) {
         setObj(className, fill, node, fillColor)
       }
-
       if (stroke) {
         setObj(className, stroke, node, strokeColor)
       }
@@ -29,8 +28,13 @@ const getStyleType = (node) => {
 let num = 0
 
 const addClassName = (node) => {
-  if (node.classList.value === "") {
-    node.classList.value = num
+  if (!node.classList.value) {
+    if (node.id) {
+      node.classList.value = node.id
+    }
+    else {
+      node.classList.value = num
+    }
   }
   num++
 }
@@ -41,6 +45,8 @@ const findEachChild = (node) => {
     children.forEach((child) => {
       findEachChild(child)
     })
+    // addClassName(node)
+    // getStyleType(node)
   } else {
     addClassName(node)
     getStyleType(node)
@@ -61,6 +67,14 @@ const filterObject = (type, element) => {
         filteredType.strokeColor = rgb2hex(stroke)
         filteredType.stroke = "stroke"
       }
+      if (element.id.includes('stroke') && element.getAttribute("stop-color")) {
+        filteredType.strokeColor = element.getAttribute("stop-color")
+        filteredType.stroke = "stroke"
+      }
+      if (element.id.includes('fill') && element.getAttribute("stop-color")) {
+        filteredType.strokeColor = element.getAttribute("stop-color")
+        filteredType.stroke = "fill"
+      }
       return filteredType
     }
     default: {
@@ -74,10 +88,16 @@ const setObj = (className, type, node, color) => {
     className in globalObj.groupedElementsByClassName[type]
   ) {
     globalObj.groupedElementsByClassName[type][className]["element"].push(node)
-    globalObj.groupedElementsByClassName[type][className]["color"] = color
+    globalObj.groupedElementsByClassName[type][className]["color"] = [color]
   } else {
+    if (node.getAttribute(type) && node.getAttribute(type).includes('url(#')) {
+      return
+    }
+    if (node.tagName.includes("Gradient")) {
+      return
+    }
     globalObj.groupedElementsByClassName[type][className] = { element: [node] }
-    globalObj.groupedElementsByClassName[type][className]["color"] = color
+    globalObj.groupedElementsByClassName[type][className]["color"] = [color]
   }
 }
 export const clicked = (node) => {

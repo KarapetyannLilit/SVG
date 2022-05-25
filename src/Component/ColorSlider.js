@@ -10,6 +10,9 @@ export const ColorSlider = ({ value, elements, type }) => {
   const changeColor = (e, colorRef) => {
     elements.map((element) => {
       element.style[type] = e.target.value
+      if (element.tagName.includes("stop")) {
+        element.setAttribute('stop-color', e.target.value)
+      }
     })
     colorRef.current.value = e.target.value
   }
