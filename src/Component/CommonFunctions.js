@@ -31,3 +31,10 @@ export const ForCaseXPath = (attribute, node, globalObj, findPath) => {
     }
   }
 }
+
+export const newInputs = (setfilterdFill, setfilterdStroke, globalInfo) => {
+  for (const obj in globalInfo) {
+    setfilterdStroke(Array.from(Object.keys(globalInfo[obj].stroke)))
+    setfilterdFill(Array.from(Object.keys(globalInfo[obj].fill)))
+  }
+}

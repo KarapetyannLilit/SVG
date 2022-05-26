@@ -31,8 +31,7 @@ const addClassName = (node) => {
   if (!node.classList.value) {
     if (node.id) {
       node.classList.value = node.id
-    }
-    else {
+    } else {
       node.classList.value = num
     }
   }
@@ -67,11 +66,11 @@ const filterObject = (type, element) => {
         filteredType.strokeColor = rgb2hex(stroke)
         filteredType.stroke = "stroke"
       }
-      if (element.id.includes('stroke') && element.getAttribute("stop-color")) {
+      if (element.id.includes("stroke") && element.getAttribute("stop-color")) {
         filteredType.strokeColor = element.getAttribute("stop-color")
         filteredType.stroke = "stroke"
       }
-      if (element.id.includes('fill') && element.getAttribute("stop-color")) {
+      if (element.id.includes("fill") && element.getAttribute("stop-color")) {
         filteredType.strokeColor = element.getAttribute("stop-color")
         filteredType.stroke = "fill"
       }
@@ -90,7 +89,7 @@ const setObj = (className, type, node, color) => {
     globalObj.groupedElementsByClassName[type][className]["element"].push(node)
     globalObj.groupedElementsByClassName[type][className]["color"] = [color]
   } else {
-    if (node.getAttribute(type) && node.getAttribute(type).includes('url(#')) {
+    if (node.getAttribute(type) && node.getAttribute(type).includes("url(#")) {
       return
     }
     if (node.tagName.includes("Gradient")) {
@@ -104,6 +103,6 @@ export const clicked = (node) => {
   globalObj.groupedElementsByClassName.fill = {}
   globalObj.groupedElementsByClassName.stroke = {}
   findEachChild(node.current)
-  console.log(globalObj)
 }
+
 export const GlobalObj = () => globalObj

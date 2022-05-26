@@ -1,17 +1,17 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { ColorSlider } from "./ColorSlider"
-import { FILL, STOP_COLOR, STROKE } from "./Constants"
-import { rgb2hex } from "./getRandomColor"
+import { newInputs } from "./CommonFunctions"
+import { MergeColors } from "./MergeColors"
+export const ColorInputs = ({ ShapeRef, globalInfo }) => {
+  const [filterdFill, setfilterdFill] = useState([])
+  const [filterdStroke, setfilterdStroke] = useState([])
 
-export const ColorInputs = ({ globalInfo }) => {
-  let filterdFill = []
-  let filterdStroke = []
-  let type
-  for (const obj in globalInfo) {
-    type = obj
-    filterdStroke = Array.from(Object.keys(globalInfo[obj].stroke))
-    filterdFill = Array.from(Object.keys(globalInfo[obj].fill))
-  }
+  useEffect(() => {
+    ShapeRef.current.addEventListener("click", function ankap() {
+      newInputs(setfilterdFill, setfilterdStroke, globalInfo)
+      ShapeRef.current.removeEventListener("click", ankap)
+    })
+  }, [])
 
   return (
     <div>
@@ -19,9 +19,14 @@ export const ColorInputs = ({ globalInfo }) => {
         {filterdFill &&
           filterdFill.map((className) => (
             <ColorSlider
-              value={globalInfo[type].fill[className].color}
-              elements={globalInfo[type].fill[className].element}
+              value={
+                globalInfo.groupedElementsByClassName.fill[className].color
+              }
+              elements={
+                globalInfo.groupedElementsByClassName.fill[className].element
+              }
               type={"fill"}
+              shapeRef={ShapeRef}
             />
           ))}
       </div>
@@ -29,11 +34,24 @@ export const ColorInputs = ({ globalInfo }) => {
         {filterdStroke &&
           filterdStroke.map((className) => (
             <ColorSlider
-              value={globalInfo[type].stroke[className].color}
-              elements={globalInfo[type].stroke[className].element}
+              value={
+                globalInfo.groupedElementsByClassName.stroke[className].color
+              }
+              elements={
+                globalInfo.groupedElementsByClassName.stroke[className].element
+              }
               type={"stroke"}
+              shapeRef={ShapeRef}
             />
           ))}
+      </div>
+      <div>
+        <MergeColors
+          setfilterdFill={setfilterdFill}
+          setfilterdStroke={setfilterdStroke}
+          globalInfo={globalInfo}
+          ShapeRef={ShapeRef}
+        />
       </div>
     </div>
   )
