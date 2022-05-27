@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { ColorSlider } from "./ColorSlider"
 import { newInputs } from "./CommonFunctions"
-import { MergeColors } from "./MergeColors"
 export const ColorInputs = ({ ShapeRef, globalInfo }) => {
   const [filterdFill, setfilterdFill] = useState([])
   const [filterdStroke, setfilterdStroke] = useState([])
-
+  const mergeButton = useRef()
+  // const [elms, setElms] = useState([])
+  const elms=[]
+  const checks=[]
   useEffect(() => {
     ShapeRef.current.addEventListener("click", function ankap() {
       newInputs(setfilterdFill, setfilterdStroke, globalInfo)
@@ -17,41 +19,48 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
     <div>
       <div>
         {filterdFill &&
-          filterdFill.map((className) => (
-            <ColorSlider
-              value={
-                globalInfo.groupedElementsByClassName.fill[className].color
-              }
-              elements={
-                globalInfo.groupedElementsByClassName.fill[className].element
-              }
-              type={"fill"}
-              shapeRef={ShapeRef}
-            />
-          ))}
+          filterdFill.map((className, i) => {
+            return (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.fill[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.fill[className].element
+                }
+                type={"fill"}
+                ShapeRef={ShapeRef}
+                name={className}
+                mergeRef={mergeButton}
+                setfilterdFill={setfilterdFill}
+                setfilterdStroke={setfilterdStroke}
+                elms={elms}
+                checks={checks}
+              />
+            )
+          })}
       </div>
       <div>
         {filterdStroke &&
-          filterdStroke.map((className) => (
-            <ColorSlider
-              value={
-                globalInfo.groupedElementsByClassName.stroke[className].color
-              }
-              elements={
-                globalInfo.groupedElementsByClassName.stroke[className].element
-              }
-              type={"stroke"}
-              shapeRef={ShapeRef}
-            />
-          ))}
+          filterdStroke.map((className, i) => {
+            return (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.stroke[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.stroke[className]
+                    .element
+                }
+                type={"stroke"}
+                shapeRef={ShapeRef}
+                name={className}
+              />
+            )
+          })}
       </div>
       <div>
-        <MergeColors
-          setfilterdFill={setfilterdFill}
-          setfilterdStroke={setfilterdStroke}
-          globalInfo={globalInfo}
-          ShapeRef={ShapeRef}
-        />
+        <button ref={mergeButton}>Merge Colors</button>
       </div>
     </div>
   )
