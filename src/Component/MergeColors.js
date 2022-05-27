@@ -34,7 +34,13 @@ export const MergeColors = ({
   const merge = () => {
     elms.map((el) => {
       el.classList.value = val
-      el.style.fill = globalInfo.groupedElementsByClassName.fill[val].color
+      console.log(window.getComputedStyle(el).fill.includes("url"));
+      if (window.getComputedStyle(el).fill != "none" && !window.getComputedStyle(el).fill.includes("url")) {
+        el.style.fill = globalInfo.groupedElementsByClassName.fill[val].color
+      }
+      if (window.getComputedStyle(el).stroke != "none" && !window.getComputedStyle(el).stroke.includes("url")) {
+        el.style.stroke = globalInfo.groupedElementsByClassName.stroke[val].color
+      }
       el.style.filter = ""
     })
     clicked(ShapeRef)

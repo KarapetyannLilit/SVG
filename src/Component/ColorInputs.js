@@ -13,37 +13,88 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
     })
   }, [])
 
+  const filterdFillGradient = filterdFill.filter(className => className.includes("fill"))
+  const filterdFillNoGradient = filterdFill.filter(className => !className.includes("fill"))
+
+  const filterdStrokeGradient = filterdStroke.filter(className => className.includes("stroke"))
+  const filterdStrokeNoGradient = filterdStroke.filter(className => !className.includes("stroke"))
   return (
     <div>
       <div>
-        {filterdFill &&
-          filterdFill.map((className) => (
-            <ColorSlider
-              value={
-                globalInfo.groupedElementsByClassName.fill[className].color
-              }
-              elements={
-                globalInfo.groupedElementsByClassName.fill[className].element
-              }
-              type={"fill"}
-              shapeRef={ShapeRef}
-            />
-          ))}
-      </div>
-      <div>
-        {filterdStroke &&
-          filterdStroke.map((className) => (
-            <ColorSlider
-              value={
-                globalInfo.groupedElementsByClassName.stroke[className].color
-              }
-              elements={
-                globalInfo.groupedElementsByClassName.stroke[className].element
-              }
-              type={"stroke"}
-              shapeRef={ShapeRef}
-            />
-          ))}
+        {filterdFillGradient.length > 0 &&
+          (<div>
+            Gradient Fill
+            {filterdFillGradient.map((className) => (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.fill[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.fill[className].element
+                }
+                type={"fill"}
+                shapeRef={ShapeRef}
+              />
+            ))
+            }
+          </div>)
+        }
+
+        {filterdStrokeGradient.length > 0 &&
+          (<div>
+            Gradient Stroke
+            {filterdStrokeGradient.map((className) => (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.stroke[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.stroke[className].element
+                }
+                type={"stroke"}
+                shapeRef={ShapeRef}
+              />
+            ))}
+          </div>)
+        }
+
+        {filterdFillNoGradient.length > 0 &&
+          (<div>
+            Fill
+            {filterdFillNoGradient.map((className) => (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.fill[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.fill[className].element
+                }
+                type={"fill"}
+                shapeRef={ShapeRef}
+              />
+            ))
+
+            }
+          </div>)
+        }
+
+        {filterdStrokeNoGradient.length > 0 &&
+          (<div>
+            Stroke
+            {filterdStrokeNoGradient.map((className) => (
+              <ColorSlider
+                value={
+                  globalInfo.groupedElementsByClassName.stroke[className].color
+                }
+                elements={
+                  globalInfo.groupedElementsByClassName.stroke[className].element
+                }
+                type={"stroke"}
+                shapeRef={ShapeRef}
+              />
+            ))}
+          </div>)
+        }
       </div>
       <div>
         <MergeColors

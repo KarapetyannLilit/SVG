@@ -7,6 +7,8 @@ import Find from './Component/Find';
 import girl from './Component/SvgExamples/girl';
 import http from './Component/SvgExamples/http';
 import react from './Component/SvgExamples/react';
+import circle from './Component/SvgExamples/circle';
+import xary from './Component/SvgExamples/xary';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
       <Find SvgElement={girl} />
       <Find SvgElement={http} />
       <Find SvgElement={react} />
+      <Find SvgElement={circle} />
+      <Find SvgElement={xary} />
 
 
 
