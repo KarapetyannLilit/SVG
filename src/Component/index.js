@@ -16,9 +16,11 @@ const getStyleType = (node) => {
         node
       )
       if (fill) {
+        setDefaultStyle(node)
         setObj(className, fill, node, fillColor)
       }
       if (stroke) {
+        setDefaultStyle(node)
         setObj(className, stroke, node, strokeColor)
       }
     })
@@ -28,15 +30,31 @@ const getStyleType = (node) => {
 let num = 0
 
 const addClassName = (node) => {
-  if (!node.classList.value) {
-    if (node.id) {
-      console.log(node.id);
-      node.classList.value = node.id
-    } else {
-      node.classList.value = num
+  if (!(node.tagName === "STYLE")) {
+    if (!node.classList.value) {
+      if (node.id) {
+        const fill = window.getComputedStyle(node).fill
+        const stroke = window.getComputedStyle(node).stroke
+        const stopColor = window.getComputedStyle(node).stopColor
+        let style = document.createElement("style")
+        style.type = "text/css"
+        style.innerHTML = `.${node.id}  { fill: ${fill}; stroke:${stroke}; stop-color:${stopColor}; }`
+        ShapeRef.current.appendChild(style)
+        node.classList.value = node.id
+      } else {
+        const fill = window.getComputedStyle(node).fill
+        const stroke = window.getComputedStyle(node).stroke
+        let style = document.createElement("style")
+        style.type = "text/css"
+        style.innerHTML = `.${
+          "class" + num
+        } { fill: ${fill}; stroke:${stroke} ; }`
+        ShapeRef.current.appendChild(style)
+        node.classList.value = "class" + num
+      }
     }
+    num++
   }
-  num++
 }
 
 const findEachChild = (node) => {
@@ -89,6 +107,7 @@ const setObj = (className, type, node, color) => {
   ) {
     globalObj.groupedElementsByClassName[type][className]["element"].push(node)
     globalObj.groupedElementsByClassName[type][className]["color"] = [color]
+    node.removeAttribute(type)
   } else {
     if (node.getAttribute(type) && node.getAttribute(type).includes("url(#")) {
       return
@@ -98,9 +117,16 @@ const setObj = (className, type, node, color) => {
     }
     globalObj.groupedElementsByClassName[type][className] = { element: [node] }
     globalObj.groupedElementsByClassName[type][className]["color"] = [color]
+    node.removeAttribute(type)
   }
 }
+const setDefaultStyle = (node) => {
+  const style = node.classList.value
+  node.dataset.currentStyle = style
+}
+let ShapeRef
 export const clicked = (node) => {
+  ShapeRef = node
   globalObj.groupedElementsByClassName.fill = {}
   globalObj.groupedElementsByClassName.stroke = {}
   findEachChild(node.current)

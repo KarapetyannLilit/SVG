@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react"
 import { clicked, GlobalObj } from "."
 import { newInputs } from "./CommonFunctions"
+import { rgb2hex } from "./getRandomColor"
 export const ColorSlider = ({
   value,
   elements,
@@ -33,19 +34,28 @@ export const ColorSlider = ({
   const checkCheckbox = () => {
     if (!checkboxRef.current.checked) {
       elements.forEach((elm) => elms.splice(elms.indexOf(elm), 1))
-      checks.splice(checks.indexOf(checkboxRef), 1)
+      checks.splice(checks.indexOf(checkboxRef.current), 1)
       elements.map((element) => {
         element.style.filter = ""
+        element.classList.value = element.dataset.currentStyle
+        // colorInputRef.current.value = rgb2hex(element.dataset.currentStyle)
+      })
+      elms[0].classList.value = elms[0].dataset.currentStyle
+      elms.map((element) => {
+        element.classList.value = elms[0].classList.value
+        // colorInputRef.current.value = rgb2hex(element.dataset.currentStyle)
       })
     } else {
       elements.forEach((el) => {
         elms.push(el)
       })
-      checks.push(checkboxRef)
+      checks.push(checkboxRef.current)
+      const val = elms[0].classList.value
       elements.map((element) => {
         element.style.filter = "drop-shadow(0px 2px 2px rgb(0 0 0 / 0.8))"
+        element.classList.value = val
+        // colorInputRef.current.value = rgb2hex(val)
       })
-      console.log("b")
     }
   }
   useEffect(() => {
@@ -58,25 +68,18 @@ export const ColorSlider = ({
   })
   const merge = () => {
     elms.map((el) => {
-      const val = elms[0].classList.value
-      el.classList.value = val
-      if (window.getComputedStyle(el).fill != "none" && !window.getComputedStyle(el).fill.includes("url")) {
-        el.style.fill = globalInfo.groupedElementsByClassName.fill[val].color
-        el.style.filter = ""
-      }
-      if (window.getComputedStyle(el).stroke != "none" && !window.getComputedStyle(el).stroke.includes("url")) {
-        el.style.stroke = globalInfo.groupedElementsByClassName.stroke[val].color
-        el.style.filter = ""
-      }
+      el.style.filter = ""
     })
     checks.forEach((check) => {
-      check.current.checked = !check.current.checked
+      check.checked = !check.checked
     })
+    //  newSVG = ShapeRef.current.innerHTML
+    //  ShapeRef.current = `<svg ref = ${ShapeRef}> ${newSVG} </svg>`
+    //  // ShapeRef.current.appendChild(newSVG);
     clicked(ShapeRef)
     newInputs(setfilterdFill, setfilterdStroke, globalInfo)
     elms = []
   }
-
 
   useEffect(() => {
     mergeRef && mergeRef.current.addEventListener("click", merge)
@@ -87,7 +90,6 @@ export const ColorSlider = ({
   const addShadow = () => {
     const children = Array.from(ShapeRef.current.children)
     for (const elem of children) {
-      console.log(name, elem.classList);
       if (elem.classList.value !== name) {
         elem.style.visibility = "hidden"
       }
