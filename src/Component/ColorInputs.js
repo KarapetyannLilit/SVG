@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { ColorSlider } from "./ColorSlider"
 import { newInputs } from "./CommonFunctions"
-import { MergeColors } from "./MergeColors"
 export const ColorInputs = ({ ShapeRef, globalInfo }) => {
   const [filterdFill, setfilterdFill] = useState([])
   const [filterdStroke, setfilterdStroke] = useState([])
-
+  const mergeButton = useRef()
+  // const [elms, setElms] = useState([])
+  const elms = []
+  const checks = []
   useEffect(() => {
     ShapeRef.current.addEventListener("click", function ankap() {
       newInputs(setfilterdFill, setfilterdStroke, globalInfo)
@@ -22,7 +24,7 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
     <div>
       <div>
         {filterdFillGradient.length > 0 &&
-          (<div>
+          (<div className="inputs" >
             Gradient Fill
             {filterdFillGradient.map((className) => (
               <ColorSlider
@@ -33,15 +35,20 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
                   globalInfo.groupedElementsByClassName.fill[className].element
                 }
                 type={"fill"}
-                shapeRef={ShapeRef}
-              />
+                ShapeRef={ShapeRef}
+                name={className}
+                mergeRef={mergeButton}
+                setfilterdFill={setfilterdFill}
+                setfilterdStroke={setfilterdStroke}
+                elms={elms}
+                checks={checks} />
             ))
             }
           </div>)
         }
 
         {filterdStrokeGradient.length > 0 &&
-          (<div>
+          (<div className="inputs" >
             Gradient Stroke
             {filterdStrokeGradient.map((className) => (
               <ColorSlider
@@ -52,14 +59,19 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
                   globalInfo.groupedElementsByClassName.stroke[className].element
                 }
                 type={"stroke"}
-                shapeRef={ShapeRef}
-              />
+                ShapeRef={ShapeRef}
+                name={className}
+                mergeRef={mergeButton}
+                setfilterdFill={setfilterdFill}
+                setfilterdStroke={setfilterdStroke}
+                elms={elms}
+                checks={checks} />
             ))}
           </div>)
         }
 
         {filterdFillNoGradient.length > 0 &&
-          (<div>
+          (<div className="inputs" >
             Fill
             {filterdFillNoGradient.map((className) => (
               <ColorSlider
@@ -70,7 +82,13 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
                   globalInfo.groupedElementsByClassName.fill[className].element
                 }
                 type={"fill"}
-                shapeRef={ShapeRef}
+                ShapeRef={ShapeRef}
+                name={className}
+                mergeRef={mergeButton}
+                setfilterdFill={setfilterdFill}
+                setfilterdStroke={setfilterdStroke}
+                elms={elms}
+                checks={checks}
               />
             ))
 
@@ -79,7 +97,7 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
         }
 
         {filterdStrokeNoGradient.length > 0 &&
-          (<div>
+          (<div className="inputs">
             Stroke
             {filterdStrokeNoGradient.map((className) => (
               <ColorSlider
@@ -90,19 +108,19 @@ export const ColorInputs = ({ ShapeRef, globalInfo }) => {
                   globalInfo.groupedElementsByClassName.stroke[className].element
                 }
                 type={"stroke"}
-                shapeRef={ShapeRef}
-              />
+                ShapeRef={ShapeRef}
+                name={className}
+                mergeRef={mergeButton}
+                setfilterdFill={setfilterdFill}
+                setfilterdStroke={setfilterdStroke}
+                elms={elms}
+                checks={checks} />
             ))}
           </div>)
         }
       </div>
       <div>
-        <MergeColors
-          setfilterdFill={setfilterdFill}
-          setfilterdStroke={setfilterdStroke}
-          globalInfo={globalInfo}
-          ShapeRef={ShapeRef}
-        />
+        <button ref={mergeButton}>Merge Colors</button>
       </div>
     </div>
   )

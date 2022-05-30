@@ -1,8 +1,12 @@
 div {
-  margin: 50px;
+  /* margin: 50px; */
   fill: none;
 }
-
+.inputs{
+display: flex;
+color: #908c8c;
+flex-direction: row;
+}
 .cls-1,
 .cls-2,
 .cls-3 {

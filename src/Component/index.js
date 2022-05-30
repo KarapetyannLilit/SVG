@@ -30,6 +30,7 @@ let num = 0
 const addClassName = (node) => {
   if (!node.classList.value) {
     if (node.id) {
+      console.log(node.id);
       node.classList.value = node.id
     } else {
       node.classList.value = num
