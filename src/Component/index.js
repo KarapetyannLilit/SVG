@@ -1,4 +1,4 @@
-import { CLASSNAME, FILL, STROKE } from "./Constants"
+import { CLASSNAME, FILL, STOP_COLOR, STROKE } from "./Constants"
 import { rgb2hex } from "./getRandomColor"
 
 const globalObj = {
@@ -32,20 +32,16 @@ let num = 0
 const addClassName = (node) => {
   if (!(node.tagName === "STYLE")) {
     if (!node.classList.value) {
+      const fill = window.getComputedStyle(node).fill
+      const stroke = window.getComputedStyle(node).stroke
+      let style = document.createElement("style")
+      style.type = "text/css"
       if (node.id) {
-        const fill = window.getComputedStyle(node).fill
-        const stroke = window.getComputedStyle(node).stroke
         const stopColor = window.getComputedStyle(node).stopColor
-        let style = document.createElement("style")
-        style.type = "text/css"
         style.innerHTML = `.${node.id}  { fill: ${fill}; stroke:${stroke}; stop-color:${stopColor}; }`
         ShapeRef.current.appendChild(style)
         node.classList.value = node.id
       } else {
-        const fill = window.getComputedStyle(node).fill
-        const stroke = window.getComputedStyle(node).stroke
-        let style = document.createElement("style")
-        style.type = "text/css"
         style.innerHTML = `.${
           "class" + num
         } { fill: ${fill}; stroke:${stroke} ; }`
@@ -63,8 +59,6 @@ const findEachChild = (node) => {
     children.forEach((child) => {
       findEachChild(child)
     })
-    // addClassName(node)
-    // getStyleType(node)
   } else {
     addClassName(node)
     getStyleType(node)
@@ -79,19 +73,19 @@ const filterObject = (type, element) => {
       const fill = window.getComputedStyle(element).fill
       if (fill && fill !== "none") {
         filteredType.fillColor = rgb2hex(fill)
-        filteredType.fill = "fill"
+        filteredType.fill = FILL
       }
       if (stroke && stroke !== "none") {
         filteredType.strokeColor = rgb2hex(stroke)
-        filteredType.stroke = "stroke"
+        filteredType.stroke = STROKE
       }
-      if (element.id.includes("stroke") && element.getAttribute("stop-color")) {
-        filteredType.strokeColor = element.getAttribute("stop-color")
-        filteredType.stroke = "stroke"
+      if (element.id.includes(STROKE) && element.getAttribute(STOP_COLOR)) {
+        filteredType.strokeColor = element.getAttribute(STOP_COLOR)
+        filteredType.stroke = STROKE
       }
-      if (element.id.includes("fill") && element.getAttribute("stop-color")) {
-        filteredType.strokeColor = element.getAttribute("stop-color")
-        filteredType.stroke = "fill"
+      if (element.id.includes(FILL) && element.getAttribute(STOP_COLOR)) {
+        filteredType.strokeColor = element.getAttribute(STOP_COLOR)
+        filteredType.stroke = FILL
       }
       return filteredType
     }
@@ -124,6 +118,7 @@ const setDefaultStyle = (node) => {
   const style = node.classList.value
   node.dataset.currentStyle = style
 }
+
 let ShapeRef
 export const clicked = (node) => {
   ShapeRef = node
